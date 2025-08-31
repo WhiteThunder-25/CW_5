@@ -1,82 +1,71 @@
-
-
 services:
-  backend:
+  web:
     build: .
-    command: sh -c "sleep 5 && python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     ports:
       - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
     env_file:
       - .env
-    volumes:
-      - ./staticfiles:/app/staticfiles
-      - ./static:/app/static
-    depends_on:
-      - db
-      - redis
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-
-  db:
-    image: postgres:14
-    restart: always
-    environment:
-      POSTGRES_DB: ${DATABASE_NAME}
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:6
-    command: redis-server --save 20 1 --loglevel warning
-    ports:
-      - "6379:6379"
-
-  celery:
-    build: .
-    command: celery -A config worker --loglevel=info
-    env_file:
-      - .env
-    depends_on:
-      - db
-      - redis
-      - backend
-
-
-  celery_beat:
-    build: .
-    command: celery -A config beat --loglevel=info
-    env_file:
-      - .env
-    depends_on:
-      - db
-      - redis
-      - backend
 
   nginx:
-    build: ./nginx
+    build:
+      context: ./nginx
     ports:
       - "80:80"
     volumes:
-      - ./staticfiles:/app/staticfiles
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/app/staticfiles
     depends_on:
-      - backend
+      - web
 
+  db:
+    image: postgres
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -u $POSTGRES_USER" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
-#bash -c "celery -A config worker --beat --loglevel=info"
+  redis:
+    image: redis
+    volumes:
+      - ./redis_data:/data
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+
+  celery_worker:
+    restart: always
+    build:
+      context: .
+    command: celery -A config worker --pool=solo --loglevel=info
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+
+  celery_beat:
+    restart: always
+    build:
+      context: .
+    command: celery -A config beat --loglevel=info
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
 
 volumes:
   postgres_data:
+  static_volume:
+  redis_data:

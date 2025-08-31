@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'django_celery_beat',
+    'phonenumbers',
 ]
 
 MIDDLEWARE = [
@@ -159,7 +160,7 @@ CELERY_BEAT_SCHEDULE = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://redis:6379/1',
+        'LOCATION': 'redis://redis:6379/0',
     }
 }
 
