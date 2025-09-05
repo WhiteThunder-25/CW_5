@@ -86,5 +86,5 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -t -t -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "     
-          cd ~myproject && docker-compose down && docker-compose up -d --build 
+          cd ~/myproject && docker-compose down && docker-compose up -d --build 
           "
