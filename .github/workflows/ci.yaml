@@ -3,7 +3,7 @@ name: Django CI/CD Pipeline
 on: [push]
 
 env:
-  DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+  DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }} myapp:${{ github.sha }}
 jobs:
 
   test:
