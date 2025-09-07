@@ -21,7 +21,7 @@ jobs:
         pip install flake8
 
     - name: Run Flake8
-      run: flake8 --exclude tracker/migrations/,users/migrations/
+      run: flake8 --exclude tracker2/migrations/,users/migrations/
 
   test:
     runs-on: ubuntu-latest
@@ -58,10 +58,10 @@ jobs:
       run: echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
     - name: Build image
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/tracker:${{ github.sha }} .
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/tracker2:${{ github.sha }} .
 
     - name: Push image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/tracker:${{ github.sha }}
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/tracker2:${{ github.sha }}
 
   deploy:
       runs-on: ubuntu-latest
@@ -76,8 +76,8 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-          docker pull ${{ secrets.DOCKER_USERNAME }}/tracker:${{ github.sha }}
-          docker stop tracker || true
-          docker rm tracker || true
-          docker run -d --name tracker -p 80:8000 ${{ secrets.DOCKER_USERNAME }}/tracker:${{ github.sha }}
+          docker pull ${{ secrets.DOCKER_USERNAME }}/tracker2:${{ github.sha }}
+          docker stop tracker2 || true
+          docker rm tracker2 || true
+          docker run -d --name tracker2 -p 80:8000 ${{ secrets.DOCKER_USERNAME }}/tracker2:${{ github.sha }}
           EOF
