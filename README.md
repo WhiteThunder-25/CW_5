@@ -64,7 +64,7 @@ Total coverage - 88%
 **Запуск проекта**
 1. Клонируйте репозиторий:
 ```
-git clone https://https://github.com/WhiteThunder-25/CW_5
+git clone https://github.com/WhiteThunder-25/CW_5
 cd CW_5
 ```
 2. Создайте файл .env в корне проекта и добавьте туда необходимые переменные окружения, указанные в файле .env.example.
