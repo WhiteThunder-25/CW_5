@@ -21,7 +21,7 @@ jobs:
         pip install flake8
 
     - name: Run Flake8
-      run: flake8 --exclude tracker2/migrations/,users/migrations/
+      run: flake8 --exclude tracker/migrations/,users/migrations/
 
   test:
     runs-on: ubuntu-latest
