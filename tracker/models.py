@@ -4,6 +4,7 @@ from users.models import User
 
 
 class PleasantHabit(models.Model):
+    """ Приятная привычка """
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь",
                              help_text="Выберите пользователя", related_name="pleasant_habits", null=True, blank=True)
     action = models.CharField(max_length=255, verbose_name="Действие", help_text="Введите действие привычки")
@@ -17,6 +18,7 @@ class PleasantHabit(models.Model):
 
 
 class UsefulHabit(models.Model):
+    """ Полезная привычка """
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь",
                              help_text="Выберите пользователя", related_name="useful_habits", null=True, blank=True)
     place = models.CharField(max_length=150, verbose_name="Место выполнения", help_text="Введите место выполнения")

@@ -7,7 +7,7 @@ from users.models import User
 
 
 class UsefulHabitTestCase(APITestCase):
-
+    """ Тестирование модели привычки """
     def setUp(self) -> None:
         self.user = User.objects.create(email="test@test.ru", chat_id="123")
         self.client.force_authenticate(user=self.user)
