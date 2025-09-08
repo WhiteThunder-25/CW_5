@@ -8,6 +8,7 @@ from users.permissions import IsOwner
 
 
 class PleasantHabitViewSet(viewsets.ModelViewSet):
+    """Просмотр всех привычек пользователя"""
     serializer_class = PleasantHabitSerializer
     queryset = PleasantHabit.objects.all()
     pagination_class = HabitPagination
@@ -17,6 +18,7 @@ class PleasantHabitViewSet(viewsets.ModelViewSet):
         pleasant_habit.save()
 
     def get_queryset(self):
+        """Фильтрация привычек по пользователю"""
         user = self.request.user
         return PleasantHabit.objects.filter(user=user)
 
@@ -27,6 +29,7 @@ class PleasantHabitViewSet(viewsets.ModelViewSet):
 
 
 class UsefulHabitCreateView(generics.CreateAPIView):
+    """ Создание полезной привычки """
     serializer_class = UsefulHabitSerializer
 
     def perform_create(self, serializer):
@@ -35,12 +38,14 @@ class UsefulHabitCreateView(generics.CreateAPIView):
 
 
 class PublishedUsefulHabitListView(generics.ListAPIView):
+    """ Фильтрация только опубликованных полезных привычек """
     queryset = UsefulHabit.objects.filter(is_published=True)
     serializer_class = UsefulHabitSerializer
     pagination_class = HabitPagination
 
 
 class UsefulHabitListView(generics.ListAPIView):
+    """ Выводит список всех полезных привычек"""
     serializer_class = UsefulHabitSerializer
     pagination_class = HabitPagination
     permission_classes = (IsAuthenticated, IsOwner)
@@ -51,6 +56,7 @@ class UsefulHabitListView(generics.ListAPIView):
 
 
 class UsefulHabitDetailView(generics.RetrieveAPIView):
+    """ Выводит описание полезной привычки"""
     serializer_class = UsefulHabitSerializer
     permission_classes = (IsAuthenticated,)
 
@@ -60,6 +66,7 @@ class UsefulHabitDetailView(generics.RetrieveAPIView):
 
 
 class UsefulHabitUpdateView(generics.UpdateAPIView):
+    """ Обновление полезной привычки """
     # queryset = UsefulHabit.objects.all()
     serializer_class = UsefulHabitSerializer
     # permission_classes = (IsAuthenticated,)
@@ -70,6 +77,7 @@ class UsefulHabitUpdateView(generics.UpdateAPIView):
 
 
 class UsefulHabitDeleteView(generics.DestroyAPIView):
+    """ Удаление полезной привычки """
     # queryset = UsefulHabit.objects.all()
     serializer_class = UsefulHabitSerializer
     # permission_classes = (IsAuthenticated,)
